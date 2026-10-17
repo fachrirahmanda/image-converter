@@ -1,0 +1,7 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "image-converter",
+  "compatibility_date": "2026-10-01",
+  // Static site on Cloudflare Pages: everything runs client-side, so there are no Functions.
+  "pages_build_output_dir": "./dist"
+}
