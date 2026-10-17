@@ -6,6 +6,9 @@
     <title>Image Converter</title>
     <meta name="description" content="Convert, compress, resize and crop images in your browser. JPEG, PNG, WebP, AVIF, HEIC, TIFF, GIF, BMP, SVG, ICO. Files never leave your device." />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <!-- Basis design system (separate site, see .env). Load before the app so its styles can override. -->
+    <link rel="stylesheet" href="%VITE_DS_URL%/ds.css" />
+    <script type="module" src="%VITE_DS_URL%/ds.js"></script>
     <script>
       // Apply the saved theme before first paint to avoid a flash of the wrong theme.
       try {
@@ -15,13 +18,13 @@
     </script>
   </head>
   <body>
-    <header class="app-header">
-      <div class="app-header-inner">
-        <div class="brand">
-          <img class="logo" src="/favicon.svg" alt="" width="36" height="36" />
+    <header class="navbar">
+      <div class="navbar-inner">
+        <div class="navbar-brand">
+          <img class="navbar-logo" src="/favicon.svg" alt="" width="36" height="36" />
           <div>
-            <h1>Image Converter</h1>
-            <p class="tagline">Convert · Compress · Resize · Crop</p>
+            <h1 class="navbar-title">Image Converter</h1>
+            <p class="navbar-tagline">Convert · Compress · Resize · Crop</p>
           </div>
         </div>
         <div class="theme-switch" role="group" aria-label="Theme">
@@ -42,7 +45,7 @@
       <aside class="panel surface" aria-label="Settings">
         <section>
           <h2 class="section-title">Format</h2>
-          <div id="format" class="segmented grid" role="radiogroup" aria-label="Output format">
+          <div id="format" class="segmented segmented-grid" role="radiogroup" aria-label="Output format">
             <label><input type="radio" name="format" value="webp" checked /><span>WebP</span></label>
             <label><input type="radio" name="format" value="avif" /><span>AVIF</span></label>
             <label><input type="radio" name="format" value="jpeg" /><span>JPEG</span></label>
@@ -96,15 +99,15 @@
           <div class="sub" data-show="maxside" hidden>
             <label class="field">
               <span class="field-label">Longest side</span>
-              <span class="input-suffix"><input type="number" id="max-side" min="1" value="1920" inputmode="numeric" /><span>px</span></span>
+              <span class="input-affix"><input type="number" class="input" id="max-side" min="1" value="1920" inputmode="numeric" /><span class="affix">px</span></span>
             </label>
             <div class="chips">
-              <button type="button" data-max="3840">4K</button>
-              <button type="button" data-max="2560">2560</button>
-              <button type="button" data-max="1920">1080p</button>
-              <button type="button" data-max="1280">720p</button>
-              <button type="button" data-max="800">800</button>
-              <button type="button" data-max="512">512</button>
+              <button type="button" class="chip" data-max="3840">4K</button>
+              <button type="button" class="chip" data-max="2560">2560</button>
+              <button type="button" class="chip" data-max="1920">1080p</button>
+              <button type="button" class="chip" data-max="1280">720p</button>
+              <button type="button" class="chip" data-max="800">800</button>
+              <button type="button" class="chip" data-max="512">512</button>
             </div>
             <p class="hint">Smaller images are never enlarged.</p>
           </div>
@@ -113,12 +116,12 @@
             <div class="row">
               <label class="field">
                 <span class="field-label">Width</span>
-                <input type="number" id="width" min="1" placeholder="auto" inputmode="numeric" />
+                <input type="number" class="input" id="width" min="1" placeholder="auto" inputmode="numeric" />
               </label>
               <span class="times">×</span>
               <label class="field">
                 <span class="field-label">Height</span>
-                <input type="number" id="height" min="1" placeholder="auto" inputmode="numeric" />
+                <input type="number" class="input" id="height" min="1" placeholder="auto" inputmode="numeric" />
               </label>
             </div>
             <label class="switch-row">
@@ -136,10 +139,10 @@
           <p class="subtitle">Everything runs in your browser, so your images are never uploaded.</p>
         </div>
 
-        <div id="drop" class="drop" tabindex="0" role="button" aria-label="Add images">
+        <div id="drop" class="dropzone" tabindex="0" role="button" aria-label="Add images">
           <input type="file" id="file-input" multiple hidden />
           <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 8a4 4 0 0 1 .5 7.97"/><path d="M12 12v9m0-9-3 3m3-3 3 3"/></svg>
-          <p class="drop-title">Click or drag images here to convert</p>
+          <p class="dropzone-title">Click or drag images here to convert</p>
           <p class="hint">or paste from clipboard · JPEG, PNG, WebP, AVIF, HEIC, TIFF, GIF, BMP, SVG, ICO</p>
         </div>
 
@@ -148,9 +151,9 @@
         <div id="toolbar" class="toolbar" hidden>
           <span id="summary"></span>
           <div class="toolbar-actions">
-            <button type="button" id="clear" class="btn ghost">Clear</button>
+            <button type="button" id="clear" class="btn btn-ghost">Clear</button>
             <button type="button" id="convert" class="btn">Convert again</button>
-            <button type="button" id="zip" class="btn dark">
+            <button type="button" id="zip" class="btn btn-contrast">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/></svg>
               <span class="label">Download all</span>
             </button>
@@ -164,12 +167,12 @@
             <h2 id="history-title">History</h2>
             <span id="history-usage" class="hint"></span>
           </div>
-          <button type="button" id="history-clear" class="btn ghost small">Clear</button>
+          <button type="button" id="history-clear" class="btn btn-ghost btn-sm">Clear</button>
         </div>
         <ul id="history-list" class="history-list"></ul>
-        <div id="history-empty" class="history-empty">
+        <div id="history-empty" class="empty">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg>
-          <p>No history yet</p>
+          <p class="empty-title">No history yet</p>
           <p class="hint">Converted images will appear here.</p>
         </div>
         <div class="history-foot">
@@ -184,19 +187,19 @@
 
     <footer class="site-footer">Powered by WebAssembly (MozJPEG, OxiPNG, libwebp, libavif). Your images stay on your device.</footer>
 
-    <dialog id="crop-dialog" class="sheet crop-dialog" aria-labelledby="crop-title">
+    <dialog id="crop-dialog" class="dialog crop-dialog" aria-labelledby="crop-title">
       <div class="crop-inner">
         <div class="crop-head">
           <h2 id="crop-title">Crop image</h2>
           <div class="chips" role="group" aria-label="Aspect ratio">
-            <button type="button" data-ratio="free">Free</button>
-            <button type="button" data-ratio="original">Original</button>
-            <button type="button" data-ratio="1:1">1:1</button>
-            <button type="button" data-ratio="4:3">4:3</button>
-            <button type="button" data-ratio="3:4">3:4</button>
-            <button type="button" data-ratio="16:9">16:9</button>
-            <button type="button" data-ratio="9:16">9:16</button>
-            <button type="button" data-ratio="3:2">3:2</button>
+            <button type="button" class="chip" data-ratio="free">Free</button>
+            <button type="button" class="chip" data-ratio="original">Original</button>
+            <button type="button" class="chip" data-ratio="1:1">1:1</button>
+            <button type="button" class="chip" data-ratio="4:3">4:3</button>
+            <button type="button" class="chip" data-ratio="3:4">3:4</button>
+            <button type="button" class="chip" data-ratio="16:9">16:9</button>
+            <button type="button" class="chip" data-ratio="9:16">9:16</button>
+            <button type="button" class="chip" data-ratio="3:2">3:2</button>
           </div>
         </div>
         <div class="crop-stage-wrap">
@@ -211,9 +214,9 @@
         <div class="crop-foot">
           <span id="crop-size" class="crop-size"></span>
           <div class="toolbar-actions">
-            <button type="button" id="crop-reset" class="btn ghost">Reset</button>
+            <button type="button" id="crop-reset" class="btn btn-ghost">Reset</button>
             <button type="button" id="crop-cancel" class="btn">Cancel</button>
-            <button type="button" id="crop-apply" class="btn primary">Apply crop</button>
+            <button type="button" id="crop-apply" class="btn btn-primary">Apply crop</button>
           </div>
         </div>
       </div>
@@ -226,31 +229,31 @@
           <div class="name"></div>
           <div class="meta"><span class="detail"></span> <span class="saving"></span></div>
         </div>
-        <button type="button" class="icon-btn small download" title="Download" aria-label="Download">
+        <button type="button" class="icon-btn icon-btn-sm download" title="Download" aria-label="Download">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/></svg>
         </button>
-        <button type="button" class="icon-btn small plain delete" title="Remove from history" aria-label="Remove from history">
+        <button type="button" class="icon-btn icon-btn-sm icon-btn-plain delete" title="Remove from history" aria-label="Remove from history">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
         </button>
       </li>
     </template>
 
     <template id="card-template">
-      <li class="card" data-state="working">
+      <li class="file-card" data-state="working">
         <div class="thumb"><img alt="" /></div>
         <div class="info">
           <div class="name"></div>
           <div class="meta"><span class="orig"></span><span class="arrow" aria-hidden="true">→</span><span class="out"></span></div>
         </div>
         <span class="badge"></span>
-        <div class="card-actions">
+        <div class="file-card-actions">
           <button type="button" class="icon-btn crop" aria-pressed="false" title="Crop" aria-label="Crop">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></svg>
           </button>
           <a class="icon-btn download" href="#" title="Download" aria-label="Download">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/></svg>
           </a>
-          <button type="button" class="icon-btn plain remove" title="Remove" aria-label="Remove">
+          <button type="button" class="icon-btn icon-btn-plain remove" title="Remove" aria-label="Remove">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
           </button>
         </div>

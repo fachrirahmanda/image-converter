@@ -1,4 +1,3 @@
-import '@fontsource-variable/inter';
 import './style.css';
 import { FORMATS, ICO_MAX, formatBytes, type OutFormat } from './formats';
 import { ACCEPT, decodeFile, isImageFile, type Decoded } from './decode';
@@ -108,10 +107,8 @@ function updateControls() {
   els.formatNote.textContent = f.note ?? '';
   els.qualityVal.textContent = els.quality.value;
   els.percentVal.textContent = `${els.percent.value}%`;
-  for (const r of [els.quality, els.percent]) {
-    const pct = ((Number(r.value) - Number(r.min)) / (Number(r.max) - Number(r.min))) * 100;
-    r.style.setProperty('--fill', `${pct}%`);
-  }
+  // Values set from code don't fire input events, so refresh the design system's range fill.
+  for (const r of [els.quality, els.percent]) window.DS?.syncRange(r);
   const mode = radio('resize');
   for (const m of ['percent', 'dimensions', 'maxside']) setVisible(m, mode === m);
 }
@@ -151,12 +148,12 @@ els.drop.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); els.input.click(); }
 });
 for (const type of ['dragenter', 'dragover'] as const) {
-  window.addEventListener(type, (e) => { e.preventDefault(); els.drop.classList.add('over'); });
+  window.addEventListener(type, (e) => { e.preventDefault(); els.drop.classList.add('is-dragover'); });
 }
 for (const type of ['dragleave', 'drop'] as const) {
   window.addEventListener(type, (e) => {
     e.preventDefault();
-    if (type === 'drop' || !(e as DragEvent).relatedTarget) els.drop.classList.remove('over');
+    if (type === 'drop' || !(e as DragEvent).relatedTarget) els.drop.classList.remove('is-dragover');
   });
 }
 window.addEventListener('drop', (e) => addFiles([...(e.dataTransfer?.files ?? [])]));
@@ -278,7 +275,7 @@ async function processItem(item: Item, s: Settings) {
     const saved = 1 - blob.size / item.file.size;
     const badge = $('.badge', card);
     badge.textContent = `${saved >= 0 ? '−' : '+'}${Math.abs(Math.round(saved * 100))}%`;
-    badge.className = `badge ${saved >= 0 ? 'good' : 'bad'}`;
+    badge.className = `badge ${saved >= 0 ? 'badge-success' : 'badge-danger'}`;
     $('.out', card).textContent = `${formatBytes(blob.size)} · ${width}×${height} · ${fmt.label}`;
     const dl = $<HTMLAnchorElement>('.download', card);
     dl.href = item.result.url;
@@ -354,28 +351,6 @@ els.zip.addEventListener('click', async () => {
     updateToolbar();
   }
 });
-
-// ---------- theme ----------
-
-const themeButtons = document.querySelectorAll<HTMLButtonElement>('[data-theme-value]');
-
-function applyTheme(theme: string) {
-  if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
-  else delete document.documentElement.dataset.theme;
-  themeButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.themeValue === theme)));
-}
-
-themeButtons.forEach((btn) =>
-  btn.addEventListener('click', () => {
-    const theme = btn.dataset.themeValue!;
-    applyTheme(theme);
-    try {
-      if (theme === 'system') localStorage.removeItem('theme');
-      else localStorage.setItem('theme', theme);
-    } catch {}
-  }),
-);
-applyTheme(document.documentElement.dataset.theme ?? 'system');
 
 updateControls();
 updateToolbar();

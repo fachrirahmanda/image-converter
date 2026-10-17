@@ -17,12 +17,17 @@ Convert, compress, resize and crop images entirely in the browser. Files are nev
 
 Encoding runs in Web Workers using WebAssembly codecs from [jSquash](https://github.com/jamsinclair/jSquash) (MozJPEG, OxiPNG, libwebp, libavif).
 
+## Design system
+
+Shared styles and behaviours (tokens, buttons, forms, navbar, dialog, theme switching) come from the [Basis design system](https://design-system-bc6.pages.dev), a separate site loaded at runtime from `VITE_DS_URL` (set in `.env`). `src/style.css` only holds what is specific to this app.
+
 ## Development
 
 ```bash
 npm install
-npm run dev       # local dev server
-npm run build     # type check + production build into dist/
+npm run dev           # local dev server, using the deployed design system
+npm run dev:local-ds  # use the design system dev server instead (npm run dev in ../design-system)
+npm run build         # type check + production build into dist/
 ```
 
 ## Deploy
@@ -45,3 +50,4 @@ npm run deploy
 | `src/crop.ts` | Crop editor |
 | `src/history.ts` | Local history (IndexedDB) and its panel |
 | `src/formats.ts` | Output format definitions |
+| `src/ds.d.ts` | Types for the design system API (`window.DS`) |
